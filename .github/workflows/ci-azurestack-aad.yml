@@ -1,0 +1,23 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: rakku-wd
+    steps:
+    # checkout the repo
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Use Local Azure Login Action
+      uses: rakku-ms/github-actions@azslogintest
+      with:
+        creds: ${{ secrets.AZURESTACK_LH01_AAD_CREDENTIALS }}
+        enable-AzPSSession: true
+        profileVersion: 2019-03-01-hybrid
+        environmentName: AzureStackWLH01
+    - uses: Azure/get-keyvault-secrets@v1.0
+      with:
+        keyvault: ghakeyvault
+        secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
