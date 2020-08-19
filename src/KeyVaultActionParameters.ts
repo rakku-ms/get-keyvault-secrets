@@ -30,7 +30,7 @@ export class KeyVaultActionParameters {
             if (resourceManagerEndpointUrl.endsWith('/')) {
                 resourceManagerEndpointUrl = resourceManagerEndpointUrl.substring(0, resourceManagerEndpointUrl.length-1); // need to remove trailing / from resourceManagerEndpointUrl to correctly derive suffix below
             }
-            azureKeyVaultDnsSuffix = ".vault" + resourceManagerEndpointUrl.substring(resourceManagerEndpointUrl.indexOf('.')); // keyvault suffix starts with .
+            azureKeyVaultDnsSuffix = "vault" + resourceManagerEndpointUrl.substring(resourceManagerEndpointUrl.indexOf('.'));
         }
         this.keyVaultUrl = util.format("https://%s.%s", this.keyVaultName, azureKeyVaultDnsSuffix);
         console.log(`keyvault action parameters: keyvaultname - "${this.keyVaultName}", secretsfilter - "${this.secretsFilter}", azureKeyVaultDnsSuffix - "${azureKeyVaultDnsSuffix}", keyVaultUrl - "${this.keyVaultUrl}"`);
