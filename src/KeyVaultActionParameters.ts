@@ -23,6 +23,7 @@ export class KeyVaultActionParameters {
         var azureKeyVaultDnsSuffix = "vault.azure.net";
         let environment = core.getInput("environment");
         if (environment == "AzureStack") {
+            console.log('Running keyvault action against AzureStack')
             let creds = core.getInput('creds', { required: true });
             let secrets = new SecretParser(creds, FormatType.JSON);
             let resourceManagerEndpointUrl = secrets.getSecret("$.resourceManagerEndpointUrl", false);
@@ -32,6 +33,7 @@ export class KeyVaultActionParameters {
             azureKeyVaultDnsSuffix = ".vault" + resourceManagerEndpointUrl.substring(resourceManagerEndpointUrl.indexOf('.')); // keyvault suffix starts with .
         }
         this.keyVaultUrl = util.format("https://%s.%s", this.keyVaultName, azureKeyVaultDnsSuffix);
+        console.log(`keyvault action parameters: keyvaultname - "${this.keyVaultName}", secretsfilter - "${this.secretsFilter}", azureKeyVaultDnsSuffix - "${azureKeyVaultDnsSuffix}", keyVaultUrl - "${this.keyVaultUrl}"`);
         return this;
     }
 }

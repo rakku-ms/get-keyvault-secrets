@@ -13,6 +13,7 @@ async function run() {
         let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS_${actionName}_${usrAgentRepo}`;
         core.exportVariable('AZURE_HTTP_USER_AGENT', userAgentString);
 
+        console.log('Getting KeyVaultActionParameters');
         var actionParameters = new KeyVaultActionParameters().getKeyVaultActionParameters();
         let handler: IAuthorizationHandler = null;
 
