@@ -8,23 +8,30 @@ import { KeyVaultActionParameters } from './KeyVaultActionParameters';
 
 export class KeyVaultClient extends ServiceClient {    
     private keyVaultUrl: string;
-    private apiVersion: string = "7.0";
+    private apiVersion: string = "1.0";
     private tokenArgs: string[] = ["--resource", "https://vault.azure.net"];
     
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
+        console.log(`endpoint - "${util.inspect(endpoint, {depth: null})}"`);
         this.keyVaultUrl = keyVaultActionParameters.keyVaultUrl;
         if (keyVaultActionParameters.environment == "AzureStack") {
             let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
-            this.tokenArgs = ["--resource", resourceId];
+            // https://vault.northwest.azs-longhaul-01.selfhost.corp.microsoft.com
+            this.tokenArgs[1] = resourceId;
+            this.apiVersion = "2016-10-01";
+            console.log(`tokenArgs - "${this.tokenArgs}"`);
         }
     }
 
     public async invokeRequest(request: WebRequest): Promise<WebResponse> {
         try {
+            console.log(`request 29: "${util.inspect(request, {depth: null})}"`)
             var response = await this.beginRequest(request, this.tokenArgs);
+            console.log(`response 29: "${util.inspect(response, {depth: null})}"`)
             return response;
         } catch(exception) {
+            console.log(`exception 33: "${util.inspect(exception, {depth: null})}"`)
             throw exception;
         }
     }
@@ -103,11 +110,14 @@ export class KeyVaultClient extends ServiceClient {
                 [],
                 this.apiVersion
             )
-        };        
+        };   
+        console.log(`httpRequest: "${httpRequest.uri}"`)     
 
         this.invokeRequest(httpRequest).then(async (response: WebResponse) => {
+            console.log(`response 115: "${util.inspect(response, {depth: null})}"`)
             if (response.statusCode == 200) {
                 var result = response.body.value;
+                console.log(`response value 119: "${util.inspect(result, {depth: null})}"`)
                 return new ApiResult(null, result);
             }
             else if (response.statusCode == 400) {
