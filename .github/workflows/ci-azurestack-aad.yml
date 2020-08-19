@@ -22,6 +22,8 @@ jobs:
     - name: Use Local KeyVault Action
       uses: ./
       with:
+        creds: ${{ secrets.AZURESTACK_LH01_AAD_CREDENTIALS }}
+        environment: AzureStack
         keyvault: ghakeyvault
         secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
       id: myGetSecretAction
