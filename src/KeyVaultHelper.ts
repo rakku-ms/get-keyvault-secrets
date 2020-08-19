@@ -18,7 +18,7 @@ export class KeyVaultHelper {
 
     constructor(handler: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         this.keyVaultActionParameters = keyVaultActionParameters;
-        this.keyVaultClient = new KeyVaultClient(handler, timeOut, keyVaultActionParameters.keyVaultUrl);
+        this.keyVaultClient = new KeyVaultClient(handler, timeOut, keyVaultActionParameters);
     }
 
     public downloadSecrets(): Promise<void> {

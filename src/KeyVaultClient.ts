@@ -4,15 +4,20 @@ import { IAuthorizationHandler } from "azure-actions-webclient/lib/AuthHandler/I
 import { ApiResult, ServiceClient, ApiCallback, ToError } from "azure-actions-webclient/lib/AzureRestClient";
 import { WebRequest, WebResponse } from "azure-actions-webclient/lib/webClient"
 import { AzureKeyVaultSecret } from "./KeyVaultHelper";
+import { KeyVaultActionParameters } from './KeyVaultActionParameters';
 
 export class KeyVaultClient extends ServiceClient {    
     private keyVaultUrl: string;
     private apiVersion: string = "7.0";
     private tokenArgs: string[] = ["--resource", "https://vault.azure.net"];
     
-    constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultUrl: string) {
+    constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
-        this.keyVaultUrl = keyVaultUrl;
+        this.keyVaultUrl = keyVaultActionParameters.keyVaultUrl;
+        if (keyVaultActionParameters.environment == "AzureStack") {
+            let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
+            this.tokenArgs = ["--resource", resourceId];
+        }
     }
 
     public async invokeRequest(request: WebRequest): Promise<WebResponse> {
