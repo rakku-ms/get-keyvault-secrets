@@ -8,7 +8,7 @@ import { KeyVaultActionParameters } from './KeyVaultActionParameters';
 
 export class KeyVaultClient extends ServiceClient {    
     private keyVaultUrl: string;
-    private apiVersion: string = "1.0";
+    private apiVersion: string = "7.0";
     private tokenArgs: string[] = ["--resource", "https://vault.azure.net"];
     
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
@@ -18,7 +18,7 @@ export class KeyVaultClient extends ServiceClient {
         if (keyVaultActionParameters.environment == "AzureStack") {
             let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
             // https://vault.northwest.azs-longhaul-01.selfhost.corp.microsoft.com
-            this.tokenArgs[1] = resourceId;
+            this.tokenArgs[1] = "https://vault.azlr.onmicrosoft.com/9b2fbd69-3cdc-425e-bb94-5637a7425c02";
             this.apiVersion = "2016-10-01";
             console.log(`tokenArgs - "${this.tokenArgs}"`);
         }

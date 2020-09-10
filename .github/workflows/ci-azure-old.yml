@@ -1,0 +1,20 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: Azure KeyVault Old Sample
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+    - uses: actions/checkout@master
+    - uses: rakku-ms/github-actions@azslogintest
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }} 
+    - uses: Azure/get-keyvault-secrets@v1.0
+      with:
+        keyvault: "ghakeyvault"
+        secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
