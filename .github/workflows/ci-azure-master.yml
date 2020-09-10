@@ -1,0 +1,30 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: Azure KeyVault Master Sample
+
+jobs:
+  build:
+    runs-on: rakku-wl
+    steps:
+    - name: Use Private Azure Login Action
+      uses: rakku-ms/github-actions@azslogintest
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        environment: AzureStack
+    # checkout the repo
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        npm install
+        npm run build
+    - name: Use Local KeyVault Action
+      uses: ./
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        environment: AzureStack
+        keyvault: ghakeyvault
+        secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction

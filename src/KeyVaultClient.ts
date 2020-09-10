@@ -98,7 +98,8 @@ export class KeyVaultClient extends ServiceClient {
                 [],
                 this.apiVersion
             )
-        };        
+        };   
+        console.log(`httpRequest: "${httpRequest.uri}"`)      
 
         this.invokeRequest(httpRequest).then(async (response: WebResponse) => {
             if (response.statusCode == 200) {
