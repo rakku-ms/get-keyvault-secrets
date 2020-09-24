@@ -6,6 +6,8 @@ import { WebRequest, WebResponse } from "azure-actions-webclient/lib/webClient"
 import { AzureKeyVaultSecret } from "./KeyVaultHelper";
 import { KeyVaultActionParameters } from './KeyVaultActionParameters';
 
+import fs = require('fs');
+
 export class KeyVaultClient extends ServiceClient {    
     private keyVaultUrl: string;
     private apiVersion: string = "7.0";
@@ -14,6 +16,18 @@ export class KeyVaultClient extends ServiceClient {
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
         console.log(`endpoint - "${util.inspect(endpoint, {depth: null})}"`);
+
+        // Create HTTP transport objects
+        var httpRequest: WebRequest = {
+            method: 'GET',
+            headers: {},
+            uri: endpoint.baseUrl + "metadata/endpoints?api-version=1"
+        };   
+        console.log(`httpRequest: "${util.inspect(httpRequest, {depth: null})}"`);
+        let armresponse = this.invokeRequest(httpRequest);
+        console.log(`armresponse: "${util.inspect(armresponse, {depth: null})}"`);
+        armresponse.then((result) => {fs.writeFileSync("/tmp/test", JSON.stringify(result));})
+
         this.keyVaultUrl = keyVaultActionParameters.keyVaultUrl;
         if (keyVaultActionParameters.environment == "AzureStack") {
             let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
