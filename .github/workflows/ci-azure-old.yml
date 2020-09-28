@@ -10,7 +10,7 @@ jobs:
     steps:
       # checkout the repo
     - uses: actions/checkout@master
-    - uses: rakku-ms/github-actions@azslogintest
+    - uses: Azure/login@AzureStackSupport-Beta
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }} 
     - uses: Azure/get-keyvault-secrets@v1.0

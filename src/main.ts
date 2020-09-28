@@ -25,7 +25,8 @@ async function run() {
         }
 
         if (handler != null) {
-            var keyVaultHelper = new KeyVaultHelper(handler, 100, actionParameters);            
+            var keyVaultHelper = await new KeyVaultHelper(handler, 100, actionParameters);   
+            await keyVaultHelper.initkvclient();         
             keyVaultHelper.downloadSecrets();
         }        
     } catch (error) {
