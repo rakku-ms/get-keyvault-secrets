@@ -9,7 +9,7 @@ jobs:
     runs-on: rakku-wl
     steps:
     - name: Use Private Azure Login Action
-      uses: rakku-ms/github-actions@azslogintest
+      uses: Azure/login@AzureStackSupport-Beta
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         environment: AzureCloud

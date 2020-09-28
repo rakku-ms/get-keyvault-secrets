@@ -12,30 +12,56 @@ export class KeyVaultClient extends ServiceClient {
     private keyVaultUrl: string;
     private apiVersion: string = "7.0";
     private tokenArgs: string[] = ["--resource", "https://vault.azure.net"];
+    private armEndpoint: string;
+    private keyVaultActionParameters: KeyVaultActionParameters;
+    private authHandler: IAuthorizationHandler;
     
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
+        this.authHandler = endpoint;
         console.log(`endpoint - "${util.inspect(endpoint, {depth: null})}"`);
+        this.armEndpoint = endpoint.baseUrl;
+        console.log(`baseUrl "${this.armEndpoint}"`);
+        this.keyVaultActionParameters = keyVaultActionParameters;
+    }
 
+    public async init() {
         // Create HTTP transport objects
         var httpRequest: WebRequest = {
             method: 'GET',
             headers: {},
-            uri: endpoint.baseUrl + "metadata/endpoints?api-version=1"
+            uri: this.armEndpoint + "metadata/endpoints?api-version=1"
         };   
-        console.log(`httpRequest: "${util.inspect(httpRequest, {depth: null})}"`);
-        let armresponse = this.invokeRequest(httpRequest);
-        console.log(`armresponse: "${util.inspect(armresponse, {depth: null})}"`);
-        armresponse.then((result) => {fs.writeFileSync("/tmp/test", JSON.stringify(result));})
 
-        this.keyVaultUrl = keyVaultActionParameters.keyVaultUrl;
-        if (keyVaultActionParameters.environment == "AzureStack") {
-            let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
+        console.log(`async function httpRequest: "${util.inspect(httpRequest, {depth: null})}"`);
+        var temp = this.tokenArgs;
+        this.tokenArgs = null;
+        console.log(`keyvault action parameters: keyvaultname - "${this.keyVaultActionParameters.keyVaultName}", secretsfilter - "${this.keyVaultActionParameters.secretsFilter}", keyVaultDnsSuffix - "${this.keyVaultActionParameters.keyVaultDnsSuffix}", keyVaultUrl - "${this.keyVaultUrl}"`);
+        var token = await this.authHandler.getToken(true, this.tokenArgs);
+        console.log(`token - "${util.inspect(token, {depth: null})}"`);
+        let armresponse = await this.invokeRequest(httpRequest);
+        this.tokenArgs = temp;
+        console.log(`armresponse: "${armresponse}"`);
+        //fs.writeFileSync("/tmp/test", JSON.stringify(result));
+        //var r = JSON.parse(armresponse.body);
+        var r = armresponse.body;
+        console.log(`r - "${util.inspect(r, {depth: null})}"`);
+        var audience = r.authentication.audiences[0];
+        console.log(`audience - "${audience}"`);
+        var kvResourceId = audience.replace("management","vault");
+        console.log(`kvResourceId - "${kvResourceId}"`);
+        this.keyVaultUrl = this.keyVaultActionParameters.keyVaultUrl;
+        if (this.keyVaultActionParameters.environment == "AzureStack") {
+            let resourceId = "https://" + this.keyVaultActionParameters.keyVaultDnsSuffix;
             // https://vault.northwest.azs-longhaul-01.selfhost.corp.microsoft.com
             this.tokenArgs[1] = "https://vault.azlr.onmicrosoft.com/9b2fbd69-3cdc-425e-bb94-5637a7425c02";
             this.apiVersion = "2016-10-01";
             console.log(`tokenArgs - "${this.tokenArgs}"`);
+            console.log(`keyvault action parameters: keyvaultname - "${this.keyVaultActionParameters.keyVaultName}", secretsfilter - "${this.keyVaultActionParameters.secretsFilter}", keyVaultDnsSuffix - "${this.keyVaultActionParameters.keyVaultDnsSuffix}", keyVaultUrl - "${this.keyVaultUrl}"`);
+            token = await this.authHandler.getToken(true, this.tokenArgs);
+            console.log(`token - "${util.inspect(token, {depth: null})}"`);
         }
+
     }
 
     public async invokeRequest(request: WebRequest): Promise<WebResponse> {
