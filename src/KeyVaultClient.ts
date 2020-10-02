@@ -16,6 +16,7 @@ export class KeyVaultClient extends ServiceClient {
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
         console.log(`endpoint - "${util.inspect(endpoint, {depth: null})}"`);
+        this.keyVaultUrl = keyVaultActionParameters.keyVaultUrl;
         if (keyVaultActionParameters.environment == "AzureStack") {
             let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
             // https://vault.northwest.azs-longhaul-01.selfhost.corp.microsoft.com
