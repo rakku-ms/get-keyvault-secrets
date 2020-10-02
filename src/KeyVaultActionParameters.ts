@@ -6,8 +6,10 @@ export class KeyVaultActionParameters {
     public keyVaultName: string;
     public secretsFilter: string;
     public keyVaultUrl: string;
+    public environment: string;
 
     public getKeyVaultActionParameters() : KeyVaultActionParameters {
+        this.environment = core.getInput("environment");
         this.keyVaultName = core.getInput("keyvault");
         this.secretsFilter = core.getInput("secrets");
 
