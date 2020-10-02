@@ -21,10 +21,6 @@ export class KeyVaultHelper {
         this.keyVaultClient = new KeyVaultClient(handler, timeOut, keyVaultActionParameters);
     }
 
-    public async initkvclient(){
-        await this.keyVaultClient.init();
-    }
-
     public downloadSecrets(): Promise<void> {
         var downloadAllSecrets = false;
         if (this.keyVaultActionParameters.secretsFilter && this.keyVaultActionParameters.secretsFilter.length === 1 && this.keyVaultActionParameters.secretsFilter[0] === "*") {

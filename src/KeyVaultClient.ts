@@ -12,46 +12,17 @@ export class KeyVaultClient extends ServiceClient {
     private keyVaultUrl: string;
     private apiVersion: string = "7.0";
     private tokenArgs: string[] = ["--resource", "https://vault.azure.net"];
-    private armEndpoint: string;
-    private keyVaultActionParameters: KeyVaultActionParameters;
     
     constructor(endpoint: IAuthorizationHandler, timeOut: number, keyVaultActionParameters: KeyVaultActionParameters) {
         super(endpoint, timeOut);
         console.log(`endpoint - "${util.inspect(endpoint, {depth: null})}"`);
-        this.armEndpoint = endpoint.baseUrl;
-        console.log(`baseUrl "${this.baseUrl}"`);
-        this.keyVaultActionParameters = keyVaultActionParameters;
-    }
-
-    public async init() {
-        // Create HTTP transport objects
-        var httpRequest: WebRequest = {
-            method: 'GET',
-            headers: {},
-            uri: this.armEndpoint + "metadata/endpoints?api-version=1"
-        };   
-        console.log(`httpRequest: "${util.inspect(httpRequest, {depth: null})}"`);
-
-        console.log(`async function httpRequest: "${util.inspect(httpRequest, {depth: null})}"`);
-        let armresponse = await this.invokeRequest(httpRequest);
-        console.log(`armresponse: "${armresponse}"`);
-        //fs.writeFileSync("/tmp/test", JSON.stringify(result));
-        // var r = JSON.parse(armresponse.body);
-        var r = armresponse.body;
-        console.log(`r - "${util.inspect(r, {depth: null})}"`);
-        var audience = r.authentication.audiences[0];
-        console.log(`audience - "${audience}"`);
-        var kvResourceId = audience.replace("management","vault");
-        console.log(`kvResourceId - "${kvResourceId}"`);
-        this.keyVaultUrl = this.keyVaultActionParameters.keyVaultUrl;
-        if (this.keyVaultActionParameters.environment == "AzureStack") {
-            let resourceId = "https://" + this.keyVaultActionParameters.keyVaultDnsSuffix;
+        if (keyVaultActionParameters.environment == "AzureStack") {
+            let resourceId = "https://" + keyVaultActionParameters.keyVaultDnsSuffix;
             // https://vault.northwest.azs-longhaul-01.selfhost.corp.microsoft.com
             this.tokenArgs[1] = "https://vault.azlr.onmicrosoft.com/9b2fbd69-3cdc-425e-bb94-5637a7425c02";
             this.apiVersion = "2016-10-01";
             console.log(`tokenArgs - "${this.tokenArgs}"`);
         }
-
     }
 
     public async invokeRequest(request: WebRequest): Promise<WebResponse> {
