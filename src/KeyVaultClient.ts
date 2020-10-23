@@ -25,7 +25,7 @@ export class KeyVaultClient extends ServiceClient {
         }
         var keyVaultDnsSuffix = "vault" + resourceManagerEndpointUrl.substring(resourceManagerEndpointUrl.indexOf('.'));
         this.keyVaultActionParameters.keyVaultUrl = util.format("https://%s.%s", this.keyVaultActionParameters.keyVaultName, keyVaultDnsSuffix);
-        console.log(`keyVaultUrl - "${this.keyVaultActionParameters.keyVaultUrl}"`);
+        core.debug(`keyVaultUrl - "${this.keyVaultActionParameters.keyVaultUrl}"`);
 
         // Create HTTP transport objects
         var httpRequest: WebRequest = {
@@ -35,10 +35,10 @@ export class KeyVaultClient extends ServiceClient {
         };
         this.tokenArgs = null;
         var armresponse = await this.invokeRequest(httpRequest);
-        console.log(`armresponse: "${util.inspect(armresponse, {depth: null})}"`);
+        core.debug(`armresponse: "${util.inspect(armresponse, {depth: null})}"`);
         var audience = armresponse.body.authentication.audiences[0];
         var kvResourceId = audience.replace("management","vault");
-        console.log(`audience: "${audience}", kvResourceId: "${kvResourceId}"`);
+        core.debug(`audience: "${audience}", kvResourceId: "${kvResourceId}"`);
         this.tokenArgs = ["--resource", kvResourceId];
         this.apiVersion = "2016-10-01";
         await this.authHandler.getToken(true, this.tokenArgs);
