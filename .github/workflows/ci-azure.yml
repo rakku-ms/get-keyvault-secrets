@@ -1,0 +1,32 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: Azure KeyVault local build
+
+env:
+  NUGET_VERSION: '5.3.1'                # set this to the node version to use
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    - name: Use Private Azure Login Action
+      uses: azure/login@releases/v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        environment: AzureCloud
+    # checkout the repo
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        npm install
+        npm run build
+    - name: Use Local KeyVault Action
+      uses: ./
+      with:
+        keyvault: ghakeyvault
+        secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
