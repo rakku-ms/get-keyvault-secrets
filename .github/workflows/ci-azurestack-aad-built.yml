@@ -1,0 +1,23 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: AzureStack KeyVault using azure/get-keyvault-secrets@release-stack
+
+env:
+  NUGET_VERSION: '5.3.1'                # set this to the node version to use
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    - uses: azure/login@releases/v1
+      with:
+        creds: ${{ secrets.AZURESTACK_ORLANDO }}
+        environment: azurestack
+    - uses: azure/get-keyvault-secrets@release-stack
+      with:
+        keyvault: ghakeyvault
+        secrets: 'secret001'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
